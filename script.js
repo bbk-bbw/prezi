@@ -4,7 +4,6 @@ const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
 const slideCounter = document.getElementById('slide-counter');
 const loadingIndicator = document.getElementById('loading');
-const headerElement = document.getElementById('presentation-header');
 const footerElement = document.getElementById('presentation-footer');
 
 // State
@@ -17,20 +16,14 @@ let animatableItems = [];
 // --- Core Functions ---
 
 function applyTemplate(template, slideData) {
-    // Replace all placeholders with data from the slide object.
-    // If a key doesn't exist in slideData, its placeholder will be replaced with an empty string.
     return template.replace(/\{\{([^}]+)\}\}/g, (match, key) => {
-        const value = slideData[key.trim()]; // Get value for the key
-
+        const value = slideData[key.trim()];
         if (Array.isArray(value)) {
-            // If the value is an array, format it as list items.
             return value.map(item => `<li>${item}</li>`).join('');
         }
-        // If value exists and is a string/number, return it. Otherwise, return an empty string.
         return (typeof value === 'string' || typeof value === 'number') ? value : '';
     });
 }
-
 
 function renderSlide() {
     if (slides.length === 0 || Object.keys(templates).length === 0) return;
@@ -44,7 +37,7 @@ function renderSlide() {
     const slideHtml = applyTemplate(templateString, slideData);
 
     const slideElement = document.createElement('div');
-    slideElement.className = 'slide active w-full h-full flex items-center justify-center';
+    slideElement.className = 'slide active w-full h-full';
     slideElement.innerHTML = slideHtml;
     
     const containersToAnimate = slideElement.querySelectorAll('.animate-children');
@@ -99,10 +92,6 @@ async function initializeViewer(fileId) {
     const templateUrl = './templates.json';
 
     try {
-        // Set footer text from filename
-        const presentationName = decodeURIComponent(fileId).replace(/\.json$/i, '');
-        footerElement.textContent = presentationName;
-
         const [slideResponse, templateResponse] = await Promise.all([
             fetch(slideUrl),
             fetch(templateUrl)
@@ -114,10 +103,13 @@ async function initializeViewer(fileId) {
         const slideData = await slideResponse.json();
         templates = await templateResponse.json();
         
-        // Set header text from JSON
+        // Create combined footer text
+        const presentationName = decodeURIComponent(fileId).replace(/\.json$/i, '');
+        let footerText = presentationName;
         if (slideData.header) {
-            headerElement.textContent = slideData.header;
+            footerText = `${slideData.header}, ${presentationName}`;
         }
+        footerElement.textContent = footerText;
 
         slides = slideData.slides;
         loadingIndicator.style.display = 'none';
