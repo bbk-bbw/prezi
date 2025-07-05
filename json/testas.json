@@ -1,0 +1,47 @@
+{
+  "slides": [
+    {
+      "type": "header_2col_image",
+      "header_text": "Berufsbildnerkurs BBW Winterthur",
+      "title": "Eigenheiten der 15- bis 20-jährigen Lernenden",
+      "subtitle": "Das Wichtigste in Kürze",
+      "content": "<ul><li>Sie bringen <strong>frischen Wind und neue Perspektiven</strong> in die Betriebe, sind oft <strong>neugierig und offen für neue Technologien</strong>.</li><li>Gleichzeitig benötigen sie <strong>Unterstützung und Begleitung</strong> durch die Berufsbildner, um die <strong>Herausforderungen dieser Lebensphase</strong> zu meistern.</li></ul>",
+      "image_src": "https://placehold.co/400x300/05a6a1/white?text=Keypoints"
+    },
+    {
+      "type": "video_embed",
+      "title": "Lutz Jäncke - Ticken Jugendlichen anders?",
+      "video_src": "https://www.youtube.com/embed/dQw4w9WgXcQ"
+    },
+    {
+      "type": "quote",
+      "header_text": "Berufsbildnerkurs BBW Winterthur",
+      "title": "Definition - Reifeprozess",
+      "quote_text": "Der Reifeprozess beschreibt die Entwicklung von der Kindheit zum Erwachsenenalter. Er umfasst körperliche, geistige und soziale Veränderungen und führt zur wachsenden Selbstständigkeit und Eigenverantwortung."
+    },
+    {
+      "type": "header_2col_text",
+      "title": "Entwicklungsaufgaben des Jugendalters nach Havighurst",
+      "content_left": "<ul><li>➕ Übernahme der männlichen bzw. weiblichen Geschlechtsrolle</li><li>➕ Akzeptieren des eigenen Körpers</li><li>➕ Aufbau neuer und reifer Beziehungen</li><li>➕ Loslösung von den Eltern</li></ul>",
+      "content_right": "<ul><li>➕ Berufswahl und -ausbildung</li><li>➕ Erwerb intellektueller Fähigkeiten</li><li>➕ Entwicklung sozialverantwortlichen Verhaltens</li><li>➕ Vorbereitung auf Partnerschaft und Familie</li></ul>"
+    },
+    {
+      "type": "image_with_title",
+      "header_text": "Berufsbildnerkurs BBW Winterthur",
+      "title": "Stress",
+      "subtitle": "Zustimmungsanteil zu dem Item „Mein Leben ist in den letzten 3 Jahren stressiger geworden“",
+      "image_src": "https://placehold.co/800x500/e2e8f0/334155?text=Chart+Goes+Here"
+    },
+    {
+      "type": "discussion",
+      "title": "Diskussion",
+      "subtitle": "Herausforderungen und Chancen",
+      "prompt_box_content": "<p><strong>Gruppendiskussion:</strong> Merken Sie sich die wichtigsten Aspekte des Reifeprozesses und besprechen Sie in Ihrer Gruppe, welche Herausforderungen und Chancen die Eigenheiten der Lernenden mit sich bringen.</p>",
+      "questions": [
+        "Wie können Sie als Berufsbildner die Lernenden optimal unterstützen?",
+        "Wie gehen Sie mit Stimmungsschwankungen um?",
+        "Wie setzen Sie klare Regeln und Grenzen?"
+      ]
+    }
+  ]
+}
