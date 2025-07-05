@@ -5,6 +5,11 @@ const nextBtn = document.getElementById('next-btn');
 const slideCounter = document.getElementById('slide-counter');
 const loadingIndicator = document.getElementById('loading');
 const footerElement = document.getElementById('presentation-footer');
+const overviewBtn = document.getElementById('overview-btn');
+const overviewModal = document.getElementById('overview-modal');
+const overviewGrid = document.getElementById('overview-grid');
+const closeOverviewBtn = document.getElementById('close-overview-btn');
+
 
 // State
 let slides = [];
@@ -87,6 +92,34 @@ function prevStep() {
     updateControls();
 }
 
+function populateOverview() {
+    overviewGrid.innerHTML = '';
+    slides.forEach((slide, index) => {
+        const preview = document.createElement('div');
+        preview.className = 'overview-slide-preview';
+        
+        // Use title or a fallback for the preview text
+        const previewText = slide.title || `Slide ${index + 1}`;
+        preview.innerHTML = `<span>${previewText}</span><span class="slide-number">${index + 1}</span>`;
+        
+        preview.addEventListener('click', () => {
+            currentSlideIndex = index;
+            renderSlide();
+            closeOverview();
+        });
+        overviewGrid.appendChild(preview);
+    });
+}
+
+function openOverview() {
+    overviewModal.style.display = 'flex';
+}
+
+function closeOverview() {
+    overviewModal.style.display = 'none';
+}
+
+
 async function initializeViewer(fileId) {
     const slideUrl = `./json/${fileId}.json`;
     const templateUrl = './templates.json';
@@ -103,7 +136,6 @@ async function initializeViewer(fileId) {
         const slideData = await slideResponse.json();
         templates = await templateResponse.json();
         
-        // Create combined footer text
         const presentationName = decodeURIComponent(fileId).replace(/\.json$/i, '');
         let footerText = presentationName;
         if (slideData.header) {
@@ -117,6 +149,7 @@ async function initializeViewer(fileId) {
         if (slides && slides.length > 0) {
             currentSlideIndex = 0;
             renderSlide();
+            populateOverview(); // Create the overview grid once slides are loaded
         } else {
             slideContainer.innerHTML = '<p class="text-red-500">No slides found in the JSON file.</p>';
         }
@@ -131,12 +164,23 @@ async function initializeViewer(fileId) {
 // --- Event Listeners ---
 nextBtn.addEventListener('click', nextStep);
 prevBtn.addEventListener('click', prevStep);
+overviewBtn.addEventListener('click', openOverview);
+closeOverviewBtn.addEventListener('click', closeOverview);
+
+// Close modal if user clicks the background overlay
+overviewModal.addEventListener('click', (e) => {
+    if (e.target === overviewModal) {
+        closeOverview();
+    }
+});
 
 document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowRight') {
         nextBtn.click();
     } else if (event.key === 'ArrowLeft') {
         prevBtn.click();
+    } else if (event.key === 'Escape') {
+        closeOverview();
     }
 });
 
