@@ -10,6 +10,8 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
         }
         .slide.active {
             display: flex;
@@ -24,26 +26,21 @@
         }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+<body class="bg-white">
 
-    <div id="viewer" class="w-full max-w-4xl aspect-[16/9] bg-white rounded-lg shadow-lg flex flex-col relative">
+    <div id="viewer" class="w-screen h-screen bg-white flex flex-col relative">
         <div id="slide-container" class="flex-grow p-8 md:p-16 flex items-center justify-center overflow-hidden">
             <div id="loading">
                 <p class="text-xl text-gray-500">Loading slides...</p>
             </div>
         </div>
-        <div class="absolute bottom-4 left-4 flex items-center">
-             <span id="slide-counter" class="text-sm text-gray-500 font-mono">0 / 0</span>
+        <div class="absolute bottom-4 left-4 flex items-center z-10">
+             <span id="slide-counter" class="text-sm text-gray-500 font-mono bg-black bg-opacity-20 px-2 py-1 rounded">0 / 0</span>
         </div>
-        <div class="absolute bottom-4 right-4 flex items-center space-x-2">
-            <button id="prev-btn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Prev</button>
-            <button id="next-btn" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+        <div class="absolute bottom-4 right-4 flex items-center space-x-2 z-10">
+            <button id="prev-btn" class="px-4 py-2 bg-gray-800 bg-opacity-50 text-white rounded-md hover:bg-opacity-75 transition-opacity disabled:opacity-20 disabled:cursor-not-allowed">Prev</button>
+            <button id="next-btn" class="px-4 py-2 bg-gray-800 bg-opacity-50 text-white rounded-md hover:bg-opacity-75 transition-opacity disabled:opacity-20 disabled:cursor-not-allowed">Next</button>
         </div>
-    </div>
-
-    <div class="mt-4 text-sm text-gray-500 text-center">
-        <p>To use: `?id=[your_json_filename_without_extension]`</p>
-        <p>Example: `.../index.html?id=test` will fetch `./json/test.json`</p>
     </div>
 
     <script>
@@ -95,7 +92,6 @@
             slideElement.className = 'slide active w-full h-full flex items-center justify-center';
             slideElement.innerHTML = slideHtml;
             
-            // Find elements that should have their children animated
             const containersToAnimate = slideElement.querySelectorAll('.animate-children');
             containersToAnimate.forEach(container => {
                 const children = Array.from(container.children);
@@ -112,19 +108,16 @@
         function updateControls() {
             slideCounter.textContent = `${currentSlideIndex + 1} / ${slides.length}`;
             prevBtn.disabled = currentSlideIndex === 0 && animationStep === 0;
-            // Next is disabled only on the very last step of the last slide
             const isLastSlide = currentSlideIndex === slides.length - 1;
             const isLastStep = animationStep === animatableItems.length;
             nextBtn.disabled = isLastSlide && isLastStep;
         }
 
         function nextStep() {
-            // Check if there are more items to animate on the current slide
             if (animationStep < animatableItems.length) {
                 animatableItems[animationStep].classList.add('visible');
                 animationStep++;
             } else {
-                // If no more animations, go to the next slide
                 if (currentSlideIndex < slides.length - 1) {
                     currentSlideIndex++;
                     renderSlide();
@@ -134,10 +127,14 @@
         }
 
         function prevStep() {
-            // Always go to the previous slide directly, resetting animations
-            if (currentSlideIndex > 0) {
-                currentSlideIndex--;
-                renderSlide();
+            if (animationStep > 0) {
+                animationStep--;
+                animatableItems[animationStep].classList.remove('visible');
+            } else {
+                if (currentSlideIndex > 0) {
+                    currentSlideIndex--;
+                    renderSlide();
+                }
             }
             updateControls();
         }
