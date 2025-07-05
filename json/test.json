@@ -1,0 +1,30 @@
+{
+  "slides": [
+    {
+      "type": "title",
+      "title": "Introduction to Web Development",
+      "subtitle": "A journey into building for the web"
+    },
+    {
+      "type": "overview",
+      "title": "Course Overview",
+      "points": [
+        "The Basics: HTML, CSS, JavaScript",
+        "Frontend Frameworks",
+        "Backend Development",
+        "Databases and Deployment"
+      ]
+    },
+    {
+      "type": "theory",
+      "title": "What is HTML?",
+      "content": "<p>HTML stands for <strong>HyperText Markup Language</strong>. It's the standard markup language for documents designed to be displayed in a web browser. It can be assisted by technologies such as Cascading Style Sheets (CSS) and scripting languages such as JavaScript.</p><p>Web browsers receive HTML documents from a web server or from local storage and render the documents into multimedia web pages.</p>"
+    },
+    {
+        "type": "assignment",
+        "title": "Assignment 1: Your First Web Page",
+        "description": "Create a simple HTML page to introduce yourself. Use headings, paragraphs, and a list.",
+        "link": "https://github.com/your-username/your-repo/blob/main/assignment-1.md"
+    }
+  ]
+}
