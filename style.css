@@ -1,0 +1,31 @@
+/* Set a fluid root font-size */
+html {
+    /*
+     * clamp(MIN, PREFERRED, MAX)
+     * MIN: The smallest the font will get (12px).
+     * PREFERRED: The ideal size, scales with 1.5% of the viewport width.
+     * MAX: The largest the font will get (22px).
+     */
+    font-size: clamp(12px, 1.5vw, 22px);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f3f4f6;
+    margin: 0;
+    padding: 0;
+}
+
+.slide.active {
+    display: flex;
+}
+
+/* Animation Styles */
+.fade-in-item {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.fade-in-item.visible {
+    opacity: 1;
+}
