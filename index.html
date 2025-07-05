@@ -19,7 +19,7 @@
 <body class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
 
     <div id="viewer" class="w-full max-w-4xl aspect-[16/9] bg-white rounded-lg shadow-lg flex flex-col relative">
-        <div id="slide-container" class="flex-grow p-8 md:p-16 flex items-center justify-center">
+        <div id="slide-container" class="flex-grow p-8 md:p-16 flex items-center justify-center overflow-hidden">
             <div id="loading">
                 <p class="text-xl text-gray-500">Loading slides...</p>
             </div>
@@ -55,22 +55,29 @@
 
         /**
          * Replaces placeholders in a template string with data from a slide object.
+         * This version is more generic and can handle any array to format it as list items.
          * @param {string} template - The HTML template string with {{placeholders}}.
          * @param {object} slideData - The data object for the slide.
          * @returns {string} - The populated HTML string.
          */
         function applyTemplate(template, slideData) {
             let output = template;
-            // Handle special cases first, like arrays that need to be formatted.
-            if (slideData.points && Array.isArray(slideData.points)) {
-                 const pointsHtml = slideData.points.map(point => `<li>${point}</li>`).join('');
-                 output = output.replace('{{points}}', pointsHtml);
-            }
-
-            // Handle all other simple key-value replacements.
+            // Handle all key-value replacements, with special handling for arrays.
             for (const key in slideData) {
-                const regex = new RegExp(`{{${key}}}`, 'g');
-                output = output.replace(regex, slideData[key]);
+                const placeholder = `{{${key}}}`;
+                if (output.includes(placeholder)) {
+                    const value = slideData[key];
+                    if (Array.isArray(value)) {
+                        // If the value is an array of strings, format it as list items.
+                        const listHtml = value.map(item => `<li>${item}</li>`).join('');
+                        output = output.replace(new RegExp(placeholder, 'g'), listHtml);
+                    } else {
+                        // Otherwise, do a simple string replacement for primitive values.
+                        if(typeof value === 'string' || typeof value === 'number') {
+                           output = output.replace(new RegExp(placeholder, 'g'), value);
+                        }
+                    }
+                }
             }
             return output;
         }
