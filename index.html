@@ -44,9 +44,9 @@
         </div>
     </div>
 
-    <div class="mt-4 text-sm text-gray-500">
-        <p>To use: `?id=[URL_TO_YOUR_JSON_FILE]`</p>
-        <p>Example: `.../index.html?id=https://raw.githubusercontent.com/your-username/your-repo/main/slides.json`</p>
+    <div class="mt-4 text-sm text-gray-500 text-center">
+        <p>To use: `?id=[your_json_filename_without_extension]`</p>
+        <p>Example: `.../index.html?id=test` will fetch `./json/test.json`</p>
     </div>
 
 
@@ -140,6 +140,7 @@
          */
         async function fetchSlides(url) {
             try {
+                // Using a CORS proxy for local testing if needed, but direct fetch is better for production
                 const response = await fetch(url);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -156,7 +157,7 @@
             } catch (error) {
                 console.error("Failed to fetch slides:", error);
                 loadingIndicator.style.display = 'none';
-                slideContainer.innerHTML = `<p class="text-red-500">Error loading slides. Check the console and the provided URL.</p>`;
+                slideContainer.innerHTML = `<p class="text-red-500">Error loading slides. Check the file path and JSON format.</p>`;
             }
         }
 
@@ -178,13 +179,15 @@
         // --- Initialization ---
         window.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
-            const jsonUrl = params.get('id');
+            const fileId = params.get('id');
 
-            if (jsonUrl) {
+            if (fileId) {
+                // Construct the relative path to the JSON file
+                const jsonUrl = `./json/${fileId}.json`;
                 fetchSlides(jsonUrl);
             } else {
                  loadingIndicator.style.display = 'none';
-                 slideContainer.innerHTML = '<p class="text-gray-500">Please provide a JSON file URL via the "id" query parameter.</p>';
+                 slideContainer.innerHTML = '<p class="text-gray-500">Please provide a file name via the "id" query parameter.</p>';
                  prevBtn.disabled = true;
                  nextBtn.disabled = true;
             }
