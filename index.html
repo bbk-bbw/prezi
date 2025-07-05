@@ -14,6 +14,14 @@
         .slide.active {
             display: flex;
         }
+        /* Animation Styles */
+        .fade-in-item {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .fade-in-item.visible {
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
@@ -50,45 +58,34 @@
         let slides = [];
         let templates = {};
         let currentSlideIndex = 0;
+        let animationStep = 0;
+        let animatableItems = [];
 
         // --- Core Functions ---
 
-        /**
-         * Replaces placeholders in a template string with data from a slide object.
-         * This version is more generic and can handle any array to format it as list items.
-         * @param {string} template - The HTML template string with {{placeholders}}.
-         * @param {object} slideData - The data object for the slide.
-         * @returns {string} - The populated HTML string.
-         */
         function applyTemplate(template, slideData) {
             let output = template;
-            // Handle all key-value replacements, with special handling for arrays.
             for (const key in slideData) {
                 const placeholder = `{{${key}}}`;
                 if (output.includes(placeholder)) {
                     const value = slideData[key];
                     if (Array.isArray(value)) {
-                        // If the value is an array of strings, format it as list items.
                         const listHtml = value.map(item => `<li>${item}</li>`).join('');
                         output = output.replace(new RegExp(placeholder, 'g'), listHtml);
-                    } else {
-                        // Otherwise, do a simple string replacement for primitive values.
-                        if(typeof value === 'string' || typeof value === 'number') {
-                           output = output.replace(new RegExp(placeholder, 'g'), value);
-                        }
+                    } else if (typeof value === 'string' || typeof value === 'number') {
+                        output = output.replace(new RegExp(placeholder, 'g'), value);
                     }
                 }
             }
             return output;
         }
 
-        /**
-         * Renders the current slide based on its index.
-         */
         function renderSlide() {
             if (slides.length === 0 || Object.keys(templates).length === 0) return;
 
             slideContainer.innerHTML = '';
+            animationStep = 0;
+            animatableItems = [];
 
             const slideData = slides[currentSlideIndex];
             const templateString = templates[slideData.type] || templates.default;
@@ -97,30 +94,59 @@
             const slideElement = document.createElement('div');
             slideElement.className = 'slide active w-full h-full flex items-center justify-center';
             slideElement.innerHTML = slideHtml;
+            
+            // Find elements that should have their children animated
+            const containersToAnimate = slideElement.querySelectorAll('.animate-children');
+            containersToAnimate.forEach(container => {
+                const children = Array.from(container.children);
+                children.forEach(child => {
+                    child.classList.add('fade-in-item');
+                    animatableItems.push(child);
+                });
+            });
 
             slideContainer.appendChild(slideElement);
-
             updateControls();
         }
 
-        /**
-         * Updates the state of the navigation buttons and counter.
-         */
         function updateControls() {
             slideCounter.textContent = `${currentSlideIndex + 1} / ${slides.length}`;
-            prevBtn.disabled = currentSlideIndex === 0;
-            nextBtn.disabled = currentSlideIndex === slides.length - 1;
+            prevBtn.disabled = currentSlideIndex === 0 && animationStep === 0;
+            // Next is disabled only on the very last step of the last slide
+            const isLastSlide = currentSlideIndex === slides.length - 1;
+            const isLastStep = animationStep === animatableItems.length;
+            nextBtn.disabled = isLastSlide && isLastStep;
         }
 
-        /**
-         * Fetches and initializes the slides and templates.
-         */
+        function nextStep() {
+            // Check if there are more items to animate on the current slide
+            if (animationStep < animatableItems.length) {
+                animatableItems[animationStep].classList.add('visible');
+                animationStep++;
+            } else {
+                // If no more animations, go to the next slide
+                if (currentSlideIndex < slides.length - 1) {
+                    currentSlideIndex++;
+                    renderSlide();
+                }
+            }
+            updateControls();
+        }
+
+        function prevStep() {
+            // Always go to the previous slide directly, resetting animations
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                renderSlide();
+            }
+            updateControls();
+        }
+
         async function initializeViewer(fileId) {
             const slideUrl = `./json/${fileId}.json`;
             const templateUrl = './templates.json';
 
             try {
-                // Fetch both files concurrently
                 const [slideResponse, templateResponse] = await Promise.all([
                     fetch(slideUrl),
                     fetch(templateUrl)
@@ -130,7 +156,7 @@
                 if (!templateResponse.ok) throw new Error(`Failed to load templates: ${templateResponse.statusText}`);
 
                 const slideData = await slideResponse.json();
-                templates = await templateResponse.json(); // Store templates globally
+                templates = await templateResponse.json();
 
                 slides = slideData.slides;
                 loadingIndicator.style.display = 'none';
@@ -150,27 +176,13 @@
         }
 
         // --- Event Listeners ---
-        nextBtn.addEventListener('click', () => {
-            if (currentSlideIndex < slides.length - 1) {
-                currentSlideIndex++;
-                renderSlide();
-            }
-        });
-
-        prevBtn.addEventListener('click', () => {
-            if (currentSlideIndex > 0) {
-                currentSlideIndex--;
-                renderSlide();
-            }
-        });
+        nextBtn.addEventListener('click', nextStep);
+        prevBtn.addEventListener('click', prevStep);
         
-        // --- Keyboard Navigation ---
         document.addEventListener('keydown', (event) => {
             if (event.key === 'ArrowRight') {
-                // Trigger the next button's click event to go to the next slide
                 nextBtn.click();
             } else if (event.key === 'ArrowLeft') {
-                // Trigger the previous button's click event to go to the previous slide
                 prevBtn.click();
             }
         });
