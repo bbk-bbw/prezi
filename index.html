@@ -6,6 +6,7 @@
     <title>Slide Viewer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
@@ -22,15 +23,25 @@
         <footer class="absolute bottom-0 left-0 w-full p-4 flex justify-between items-center z-10">
             <!-- Left: Navigation Controls -->
             <div class="flex items-center space-x-2">
-                <button id="prev-btn" class="px-4 py-2 bg-gray-800 bg-opacity-50 text-white rounded-md hover:bg-opacity-75 transition-opacity disabled:opacity-20 disabled:cursor-not-allowed">Prev</button>
-                <button id="next-btn" class="px-4 py-2 bg-gray-800 bg-opacity-50 text-white rounded-md hover:bg-opacity-75 transition-opacity disabled:opacity-20 disabled:cursor-not-allowed">Next</button>
-                 <span id="slide-counter" class="text-sm text-gray-500 font-mono">0 / 0</span>
+                <button id="prev-btn" class="control-btn"><i class="fas fa-arrow-left"></i></button>
+                <button id="next-btn" class="control-btn"><i class="fas fa-arrow-right"></i></button>
+                <button id="overview-btn" class="control-btn"><i class="fas fa-th-large"></i></button>
+                <span id="slide-counter" class="text-sm text-gray-500 font-mono ml-2">0 / 0</span>
             </div>
 
             <!-- Right: Combined Footer Text -->
             <div id="presentation-footer" class="text-sm text-gray-500 text-right"></div>
         </footer>
     </div>
+
+    <!-- Overview Modal -->
+    <div id="overview-modal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-8">
+        <button id="close-overview-btn" class="absolute top-4 right-4 text-white text-3xl">&times;</button>
+        <div id="overview-grid" class="w-full h-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 overflow-y-auto">
+            <!-- Slide previews will be injected here -->
+        </div>
+    </div>
+
 
     <script src="script.js"></script>
 </body>
