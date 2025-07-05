@@ -7,34 +7,23 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Basic Styling */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* Light gray background */
-        }
-        .slide {
-            display: none; /* Hide all slides by default */
-            border: 1px solid #e5e7eb; /* Light border */
-            border-radius: 0.75rem; /* Rounded corners */
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* Subtle shadow */
+            background-color: #f3f4f6;
         }
         .slide.active {
-            display: flex; /* Show the active slide */
+            display: flex;
         }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
 
     <div id="viewer" class="w-full max-w-4xl aspect-[16/9] bg-white rounded-lg shadow-lg flex flex-col relative">
-        <!-- Slide content will be injected here -->
         <div id="slide-container" class="flex-grow p-8 md:p-16 flex items-center justify-center">
-            <!-- Loading indicator -->
             <div id="loading">
                 <p class="text-xl text-gray-500">Loading slides...</p>
             </div>
         </div>
-
-        <!-- Navigation Controls -->
         <div class="absolute bottom-4 left-4 flex items-center">
              <span id="slide-counter" class="text-sm text-gray-500 font-mono">0 / 0</span>
         </div>
@@ -49,7 +38,6 @@
         <p>Example: `.../index.html?id=test` will fetch `./json/test.json`</p>
     </div>
 
-
     <script>
         // DOM elements
         const slideContainer = document.getElementById('slide-container');
@@ -60,64 +48,46 @@
 
         // State
         let slides = [];
+        let templates = {};
         let currentSlideIndex = 0;
 
-        // --- Slide Templates ---
-        // This object holds functions that generate HTML for different slide types.
-        const templates = {
-            title: (slide) => `
-                <div class="text-center w-full">
-                    <h1 class="text-5xl font-bold text-gray-800">${slide.title}</h1>
-                    ${slide.subtitle ? `<p class="text-2xl text-gray-600 mt-4">${slide.subtitle}</p>` : ''}
-                </div>
-            `,
-            overview: (slide) => `
-                <div class="w-full">
-                    <h2 class="text-3xl font-bold text-gray-800 mb-6">${slide.title}</h2>
-                    <ul class="list-disc list-inside space-y-2 text-xl text-gray-700">
-                        ${slide.points.map(point => `<li>${point}</li>`).join('')}
-                    </ul>
-                </div>
-            `,
-            theory: (slide) => `
-                <div class="w-full text-left">
-                    <h2 class="text-3xl font-bold text-gray-800 mb-4">${slide.title}</h2>
-                    <div class="text-lg text-gray-700 space-y-4">${slide.content}</div>
-                </div>
-            `,
-            assignment: (slide) => `
-                 <div class="w-full text-left">
-                    <h2 class="text-3xl font-bold text-blue-600 mb-4">${slide.title}</h2>
-                    <p class="text-lg text-gray-800 mb-2">${slide.description}</p>
-                    <a href="${slide.link}" target="_blank" class="text-blue-500 hover:underline">View Assignment Details</a>
-                </div>
-            `,
-            default: (slide) => `
-                <div class="text-center">
-                    <h2 class="text-2xl font-bold">Unsupported Slide Type</h2>
-                    <p>Type: ${slide.type}</p>
-                </div>
-            `
-        };
-
-
         // --- Core Functions ---
+
+        /**
+         * Replaces placeholders in a template string with data from a slide object.
+         * @param {string} template - The HTML template string with {{placeholders}}.
+         * @param {object} slideData - The data object for the slide.
+         * @returns {string} - The populated HTML string.
+         */
+        function applyTemplate(template, slideData) {
+            let output = template;
+            // Handle special cases first, like arrays that need to be formatted.
+            if (slideData.points && Array.isArray(slideData.points)) {
+                 const pointsHtml = slideData.points.map(point => `<li>${point}</li>`).join('');
+                 output = output.replace('{{points}}', pointsHtml);
+            }
+
+            // Handle all other simple key-value replacements.
+            for (const key in slideData) {
+                const regex = new RegExp(`{{${key}}}`, 'g');
+                output = output.replace(regex, slideData[key]);
+            }
+            return output;
+        }
 
         /**
          * Renders the current slide based on its index.
          */
         function renderSlide() {
-            if (slides.length === 0) return;
+            if (slides.length === 0 || Object.keys(templates).length === 0) return;
 
-            // Clear previous slide
             slideContainer.innerHTML = '';
 
             const slideData = slides[currentSlideIndex];
-            const templateFunction = templates[slideData.type] || templates.default;
-            const slideHtml = templateFunction(slideData);
+            const templateString = templates[slideData.type] || templates.default;
+            const slideHtml = applyTemplate(templateString, slideData);
 
             const slideElement = document.createElement('div');
-            // We re-add the 'slide' and 'active' classes here for consistency
             slideElement.className = 'slide active w-full h-full flex items-center justify-center';
             slideElement.innerHTML = slideHtml;
 
@@ -136,28 +106,39 @@
         }
 
         /**
-         * Fetches slide data from a given URL.
+         * Fetches and initializes the slides and templates.
          */
-        async function fetchSlides(url) {
+        async function initializeViewer(fileId) {
+            const slideUrl = `./json/${fileId}.json`;
+            const templateUrl = './templates.json';
+
             try {
-                // Using a CORS proxy for local testing if needed, but direct fetch is better for production
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                slides = data.slides;
-                loadingIndicator.style.display = 'none'; // Hide loading indicator
+                // Fetch both files concurrently
+                const [slideResponse, templateResponse] = await Promise.all([
+                    fetch(slideUrl),
+                    fetch(templateUrl)
+                ]);
+
+                if (!slideResponse.ok) throw new Error(`Failed to load slides: ${slideResponse.statusText}`);
+                if (!templateResponse.ok) throw new Error(`Failed to load templates: ${templateResponse.statusText}`);
+
+                const slideData = await slideResponse.json();
+                templates = await templateResponse.json(); // Store templates globally
+
+                slides = slideData.slides;
+                loadingIndicator.style.display = 'none';
+
                 if (slides && slides.length > 0) {
                     currentSlideIndex = 0;
                     renderSlide();
                 } else {
                     slideContainer.innerHTML = '<p class="text-red-500">No slides found in the JSON file.</p>';
                 }
+
             } catch (error) {
-                console.error("Failed to fetch slides:", error);
+                console.error("Failed to initialize viewer:", error);
                 loadingIndicator.style.display = 'none';
-                slideContainer.innerHTML = `<p class="text-red-500">Error loading slides. Check the file path and JSON format.</p>`;
+                slideContainer.innerHTML = `<p class="text-red-500">Error loading content. Check file paths and JSON format.</p>`;
             }
         }
 
@@ -182,9 +163,7 @@
             const fileId = params.get('id');
 
             if (fileId) {
-                // Construct the relative path to the JSON file
-                const jsonUrl = `./json/${fileId}.json`;
-                fetchSlides(jsonUrl);
+                initializeViewer(fileId);
             } else {
                  loadingIndicator.style.display = 'none';
                  slideContainer.innerHTML = '<p class="text-gray-500">Please provide a file name via the "id" query parameter.</p>';
