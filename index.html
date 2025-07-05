@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Basic Styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+        }
+        .slide {
+            display: none; /* Hide all slides by default */
+            border: 1px solid #e5e7eb; /* Light border */
+            border-radius: 0.75rem; /* Rounded corners */
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* Subtle shadow */
+        }
+        .slide.active {
+            display: flex; /* Show the active slide */
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+
+    <div id="viewer" class="w-full max-w-4xl aspect-[16/9] bg-white rounded-lg shadow-lg flex flex-col relative">
+        <!-- Slide content will be injected here -->
+        <div id="slide-container" class="flex-grow p-8 md:p-16 flex items-center justify-center">
+            <!-- Loading indicator -->
+            <div id="loading">
+                <p class="text-xl text-gray-500">Loading slides...</p>
+            </div>
+        </div>
+
+        <!-- Navigation Controls -->
+        <div class="absolute bottom-4 left-4 flex items-center">
+             <span id="slide-counter" class="text-sm text-gray-500 font-mono">0 / 0</span>
+        </div>
+        <div class="absolute bottom-4 right-4 flex items-center space-x-2">
+            <button id="prev-btn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Prev</button>
+            <button id="next-btn" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+        </div>
+    </div>
+
+    <div class="mt-4 text-sm text-gray-500">
+        <p>To use: `?id=[URL_TO_YOUR_JSON_FILE]`</p>
+        <p>Example: `.../index.html?id=https://raw.githubusercontent.com/your-username/your-repo/main/slides.json`</p>
+    </div>
+
+
+    <script>
+        // DOM elements
+        const slideContainer = document.getElementById('slide-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const slideCounter = document.getElementById('slide-counter');
+        const loadingIndicator = document.getElementById('loading');
+
+        // State
+        let slides = [];
+        let currentSlideIndex = 0;
+
+        // --- Slide Templates ---
+        // This object holds functions that generate HTML for different slide types.
+        const templates = {
+            title: (slide) => `
+                <div class="text-center w-full">
+                    <h1 class="text-5xl font-bold text-gray-800">${slide.title}</h1>
+                    ${slide.subtitle ? `<p class="text-2xl text-gray-600 mt-4">${slide.subtitle}</p>` : ''}
+                </div>
+            `,
+            overview: (slide) => `
+                <div class="w-full">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-6">${slide.title}</h2>
+                    <ul class="list-disc list-inside space-y-2 text-xl text-gray-700">
+                        ${slide.points.map(point => `<li>${point}</li>`).join('')}
+                    </ul>
+                </div>
+            `,
+            theory: (slide) => `
+                <div class="w-full text-left">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">${slide.title}</h2>
+                    <div class="text-lg text-gray-700 space-y-4">${slide.content}</div>
+                </div>
+            `,
+            assignment: (slide) => `
+                 <div class="w-full text-left">
+                    <h2 class="text-3xl font-bold text-blue-600 mb-4">${slide.title}</h2>
+                    <p class="text-lg text-gray-800 mb-2">${slide.description}</p>
+                    <a href="${slide.link}" target="_blank" class="text-blue-500 hover:underline">View Assignment Details</a>
+                </div>
+            `,
+            default: (slide) => `
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold">Unsupported Slide Type</h2>
+                    <p>Type: ${slide.type}</p>
+                </div>
+            `
+        };
+
+
+        // --- Core Functions ---
+
+        /**
+         * Renders the current slide based on its index.
+         */
+        function renderSlide() {
+            if (slides.length === 0) return;
+
+            // Clear previous slide
+            slideContainer.innerHTML = '';
+
+            const slideData = slides[currentSlideIndex];
+            const templateFunction = templates[slideData.type] || templates.default;
+            const slideHtml = templateFunction(slideData);
+
+            const slideElement = document.createElement('div');
+            // We re-add the 'slide' and 'active' classes here for consistency
+            slideElement.className = 'slide active w-full h-full flex items-center justify-center';
+            slideElement.innerHTML = slideHtml;
+
+            slideContainer.appendChild(slideElement);
+
+            updateControls();
+        }
+
+        /**
+         * Updates the state of the navigation buttons and counter.
+         */
+        function updateControls() {
+            slideCounter.textContent = `${currentSlideIndex + 1} / ${slides.length}`;
+            prevBtn.disabled = currentSlideIndex === 0;
+            nextBtn.disabled = currentSlideIndex === slides.length - 1;
+        }
+
+        /**
+         * Fetches slide data from a given URL.
+         */
+        async function fetchSlides(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                slides = data.slides;
+                loadingIndicator.style.display = 'none'; // Hide loading indicator
+                if (slides && slides.length > 0) {
+                    currentSlideIndex = 0;
+                    renderSlide();
+                } else {
+                    slideContainer.innerHTML = '<p class="text-red-500">No slides found in the JSON file.</p>';
+                }
+            } catch (error) {
+                console.error("Failed to fetch slides:", error);
+                loadingIndicator.style.display = 'none';
+                slideContainer.innerHTML = `<p class="text-red-500">Error loading slides. Check the console and the provided URL.</p>`;
+            }
+        }
+
+        // --- Event Listeners ---
+        nextBtn.addEventListener('click', () => {
+            if (currentSlideIndex < slides.length - 1) {
+                currentSlideIndex++;
+                renderSlide();
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                renderSlide();
+            }
+        });
+
+        // --- Initialization ---
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const jsonUrl = params.get('id');
+
+            if (jsonUrl) {
+                fetchSlides(jsonUrl);
+            } else {
+                 loadingIndicator.style.display = 'none';
+                 slideContainer.innerHTML = '<p class="text-gray-500">Please provide a JSON file URL via the "id" query parameter.</p>';
+                 prevBtn.disabled = true;
+                 nextBtn.disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>
