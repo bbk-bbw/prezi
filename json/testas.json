@@ -22,8 +22,8 @@
     {
       "type": "header_2col_text",
       "title": "Entwicklungsaufgaben des Jugendalters nach Havighurst",
-      "content_left": "<ul><li>➕ Übernahme der männlichen bzw. weiblichen Geschlechtsrolle</li><li>➕ Akzeptieren des eigenen Körpers</li><li>➕ Aufbau neuer und reifer Beziehungen</li><li>➕ Loslösung von den Eltern</li></ul>",
-      "content_right": "<ul><li>➕ Berufswahl und -ausbildung</li><li>➕ Erwerb intellektueller Fähigkeiten</li><li>➕ Entwicklung sozialverantwortlichen Verhaltens</li><li>➕ Vorbereitung auf Partnerschaft und Familie</li></ul>"
+      "content_left": "<ul class='animate-children'><li>➕ Übernahme der männlichen bzw. weiblichen Geschlechtsrolle</li><li>➕ Akzeptieren des eigenen Körpers</li><li>➕ Aufbau neuer und reifer Beziehungen</li><li>➕ Loslösung von den Eltern</li></ul>",
+      "content_right": "<ul class='animate-children'><li>➕ Berufswahl und -ausbildung</li><li>➕ Erwerb intellektueller Fähigkeiten</li><li>➕ Entwicklung sozialverantwortlichen Verhaltens</li><li>➕ Vorbereitung auf Partnerschaft und Familie</li></ul>"
     },
     {
       "type": "image_with_title",
