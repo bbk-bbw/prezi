@@ -11,11 +11,6 @@
 <body class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
 
     <div id="viewer" class="w-full max-w-5xl aspect-[16/9] bg-white rounded-lg shadow-lg flex flex-col relative">
-        <!-- Persistent Header -->
-        <header id="presentation-header" class="absolute top-0 left-0 w-full p-4 text-right text-sm text-gray-500 z-10">
-            <!-- Header content will be injected here -->
-        </header>
-
         <!-- Slide Container -->
         <div id="slide-container" class="flex-grow p-8 md:p-16 flex items-center justify-center overflow-hidden">
             <div id="loading">
@@ -25,11 +20,15 @@
 
         <!-- Persistent Footer -->
         <footer class="absolute bottom-0 left-0 w-full p-4 flex justify-between items-center z-10">
-            <div id="presentation-footer" class="text-sm text-gray-500 font-mono bg-black bg-opacity-20 px-2 py-1 rounded">
-                <!-- Footer content (filename) will be injected here -->
-            </div>
+            <!-- Left: Presentation Name (from filename) -->
+            <div id="presentation-footer" class="text-sm text-gray-500 font-mono"></div>
+            
+            <!-- Center: Main Header (from JSON) -->
+            <div id="presentation-header" class="text-sm text-gray-500"></div>
+
+            <!-- Right: Navigation Controls -->
             <div class="flex items-center space-x-2">
-                <span id="slide-counter" class="text-sm text-gray-500 font-mono bg-black bg-opacity-20 px-2 py-1 rounded">0 / 0</span>
+                <span id="slide-counter" class="text-sm text-gray-500 font-mono">0 / 0</span>
                 <button id="prev-btn" class="px-4 py-2 bg-gray-800 bg-opacity-50 text-white rounded-md hover:bg-opacity-75 transition-opacity disabled:opacity-20 disabled:cursor-not-allowed">Prev</button>
                 <button id="next-btn" class="px-4 py-2 bg-gray-800 bg-opacity-50 text-white rounded-md hover:bg-opacity-75 transition-opacity disabled:opacity-20 disabled:cursor-not-allowed">Next</button>
             </div>
