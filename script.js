@@ -17,21 +17,20 @@ let animatableItems = [];
 // --- Core Functions ---
 
 function applyTemplate(template, slideData) {
-    let output = template;
-    for (const key in slideData) {
-        const placeholder = `{{${key}}}`;
-        if (output.includes(placeholder)) {
-            const value = slideData[key];
-            if (Array.isArray(value)) {
-                const listHtml = value.map(item => `<li>${item}</li>`).join('');
-                output = output.replace(new RegExp(placeholder, 'g'), listHtml);
-            } else if (typeof value === 'string' || typeof value === 'number') {
-                output = output.replace(new RegExp(placeholder, 'g'), value);
-            }
+    // Replace all placeholders with data from the slide object.
+    // If a key doesn't exist in slideData, its placeholder will be replaced with an empty string.
+    return template.replace(/\{\{([^}]+)\}\}/g, (match, key) => {
+        const value = slideData[key.trim()]; // Get value for the key
+
+        if (Array.isArray(value)) {
+            // If the value is an array, format it as list items.
+            return value.map(item => `<li>${item}</li>`).join('');
         }
-    }
-    return output;
+        // If value exists and is a string/number, return it. Otherwise, return an empty string.
+        return (typeof value === 'string' || typeof value === 'number') ? value : '';
+    });
 }
+
 
 function renderSlide() {
     if (slides.length === 0 || Object.keys(templates).length === 0) return;
