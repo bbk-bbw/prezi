@@ -1,47 +1,156 @@
-{
-  "header": "Berufsbildnerkurs BBW Winterthur",
-  "slides": [
-    {
-      "type": "header_2col_image",
-      "title": "Eigenheiten der 15- bis 20-jährigen Lernenden",
-      "subheader": "Das Wichtigste in Kürze",
-      "content": "<ul><li>Sie bringen <strong>frischen Wind und neue Perspektiven</strong> in die Betriebe, sind oft <strong>neugierig und offen für neue Technologien</strong>.</li><li>Gleichzeitig benötigen sie <strong>Unterstützung und Begleitung</strong> durch die Berufsbildner, um die <strong>Herausforderungen dieser Lebensphase</strong> zu meistern.</li></ul>",
-      "image_src": "https://placehold.co/400x300/05a6a1/white?text=Keypoints"
-    },
-    {
-      "type": "video_embed",
-      "title": "Ticken Jugendlichen anders?",
-      "subheader": "Lutz Jäncke",
-      "video_src": "https://www.nanoo.tv/link/w/bTnhofuv"
-    },
-    {
-      "type": "quote",
-      "title": "Definition - Reifeprozess",
-      "quote_text": "Der Reifeprozess beschreibt die Entwicklung von der Kindheit zum Erwachsenenalter. Er umfasst körperliche, geistige und soziale Veränderungen und führt zur wachsenden Selbstständigkeit und Eigenverantwortung."
-    },
-    {
-      "type": "header_2col_text",
-      "title": "Entwicklungsaufgaben des Jugendalters nach Havighurst",
-      "content_left": "<ul class='animate-children'><li>➕ Übernahme der männlichen bzw. weiblichen Geschlechtsrolle</li><li>➕ Akzeptieren des eigenen Körpers</li><li>➕ Aufbau neuer und reifer Beziehungen</li><li>➕ Loslösung von den Eltern</li></ul>",
-      "content_right": "<ul class='animate-children'><li>➕ Berufswahl und -ausbildung</li><li>➕ Erwerb intellektueller Fähigkeiten</li><li>➕ Entwicklung sozialverantwortlichen Verhaltens</li><li>➕ Vorbereitung auf Partnerschaft und Familie</li></ul>"
-    },
-    {
-      "type": "image_with_title",
-      "title": "Stress",
-      "subtitle": "Zustimmungsanteil zu dem Item „Mein Leben ist in den letzten 3 Jahren stressiger geworden“",
-      "subheader": "Quelle: Juvenir-Studie 2023",
-      "image_src": "https://placehold.co/800x500/e2e8f0/334155?text=Chart+Goes+Here"
-    },
-    {
-      "type": "discussion",
-      "title": "Diskussion",
-      "subtitle": "Herausforderungen und Chancen",
-      "prompt_box_content": "<p><strong>Gruppendiskussion:</strong> Merken Sie sich die wichtigsten Aspekte des Reifeprozesses und besprechen Sie in Ihrer Gruppe, welche Herausforderungen und Chancen die Eigenheiten der Lernenden mit sich bringen.</p>",
-      "questions": [
-        "Wie können Sie als Berufsbildner die Lernenden optimal unterstützen?",
-        "Wie gehen Sie mit Stimmungsschwankungen um?",
-        "Wie setzen Sie klare Regeln und Grenzen?"
-      ]
-    }
-  ]
+// DOM elements
+const slideContainer = document.getElementById('slide-container');
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
+const slideCounter = document.getElementById('slide-counter');
+const loadingIndicator = document.getElementById('loading');
+const footerElement = document.getElementById('presentation-footer');
+
+// State
+let slides = [];
+let templates = {};
+let currentSlideIndex = 0;
+let animationStep = 0;
+let animatableItems = [];
+
+// --- Core Functions ---
+
+function applyTemplate(template, slideData) {
+    return template.replace(/\{\{([^}]+)\}\}/g, (match, key) => {
+        const value = slideData[key.trim()];
+        if (Array.isArray(value)) {
+            return value.map(item => `<li>${item}</li>`).join('');
+        }
+        return (typeof value === 'string' || typeof value === 'number') ? value : '';
+    });
 }
+
+function renderSlide() {
+    if (slides.length === 0 || Object.keys(templates).length === 0) return;
+
+    slideContainer.innerHTML = '';
+    animationStep = 0;
+    animatableItems = [];
+
+    const slideData = slides[currentSlideIndex];
+    const templateString = templates[slideData.type] || templates.default;
+    const slideHtml = applyTemplate(templateString, slideData);
+
+    const slideElement = document.createElement('div');
+    slideElement.className = 'slide active w-full h-full';
+    slideElement.innerHTML = slideHtml;
+    
+    const containersToAnimate = slideElement.querySelectorAll('.animate-children');
+    containersToAnimate.forEach(container => {
+        const children = Array.from(container.children);
+        children.forEach(child => {
+            child.classList.add('fade-in-item');
+            animatableItems.push(child);
+        });
+    });
+
+    slideContainer.appendChild(slideElement);
+    updateControls();
+}
+
+function updateControls() {
+    slideCounter.textContent = `${currentSlideIndex + 1} / ${slides.length}`;
+    prevBtn.disabled = currentSlideIndex === 0 && animationStep === 0;
+    const isLastSlide = currentSlideIndex === slides.length - 1;
+    const isLastStep = animationStep === animatableItems.length;
+    nextBtn.disabled = isLastSlide && isLastStep;
+}
+
+function nextStep() {
+    if (animationStep < animatableItems.length) {
+        animatableItems[animationStep].classList.add('visible');
+        animationStep++;
+    } else {
+        if (currentSlideIndex < slides.length - 1) {
+            currentSlideIndex++;
+            renderSlide();
+        }
+    }
+    updateControls();
+}
+
+function prevStep() {
+    if (animationStep > 0) {
+        animationStep--;
+        animatableItems[animationStep].classList.remove('visible');
+    } else {
+        if (currentSlideIndex > 0) {
+            currentSlideIndex--;
+            renderSlide();
+        }
+    }
+    updateControls();
+}
+
+async function initializeViewer(fileId) {
+    const slideUrl = `./json/${fileId}.json`;
+    const templateUrl = './templates.json';
+
+    try {
+        const [slideResponse, templateResponse] = await Promise.all([
+            fetch(slideUrl),
+            fetch(templateUrl)
+        ]);
+
+        if (!slideResponse.ok) throw new Error(`Failed to load slides: ${slideResponse.statusText}`);
+        if (!templateResponse.ok) throw new Error(`Failed to load templates: ${templateResponse.statusText}`);
+
+        const slideData = await slideResponse.json();
+        templates = await templateResponse.json();
+        
+        // Create combined footer text
+        const presentationName = decodeURIComponent(fileId).replace(/\.json$/i, '');
+        let footerText = presentationName;
+        if (slideData.header) {
+            footerText = `${slideData.header}, ${presentationName}`;
+        }
+        footerElement.textContent = footerText;
+
+        slides = slideData.slides;
+        loadingIndicator.style.display = 'none';
+
+        if (slides && slides.length > 0) {
+            currentSlideIndex = 0;
+            renderSlide();
+        } else {
+            slideContainer.innerHTML = '<p class="text-red-500">No slides found in the JSON file.</p>';
+        }
+
+    } catch (error) {
+        console.error("Failed to initialize viewer:", error);
+        loadingIndicator.style.display = 'none';
+        slideContainer.innerHTML = `<p class="text-red-500">Error loading content. Check file paths and JSON format.</p>`;
+    }
+}
+
+// --- Event Listeners ---
+nextBtn.addEventListener('click', nextStep);
+prevBtn.addEventListener('click', prevStep);
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowRight') {
+        nextBtn.click();
+    } else if (event.key === 'ArrowLeft') {
+        prevBtn.click();
+    }
+});
+
+// --- Initialization ---
+window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const fileId = params.get('id');
+
+    if (fileId) {
+        initializeViewer(fileId);
+    } else {
+         loadingIndicator.style.display = 'none';
+         slideContainer.innerHTML = '<p class="text-gray-500">Please provide a file name via the "id" query parameter.</p>';
+         prevBtn.disabled = true;
+         nextBtn.disabled = true;
+    }
+});
