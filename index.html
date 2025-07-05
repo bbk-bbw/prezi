@@ -7,6 +7,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* Set a fluid root font-size */
+        html {
+            /* * clamp(MIN, PREFERRED, MAX)
+             * MIN: The smallest the font will get (12px).
+             * PREFERRED: The ideal size, scales with 1.5% of the viewport width.
+             * MAX: The largest the font will get (22px).
+             */
+            font-size: clamp(12px, 1.5vw, 22px);
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
@@ -35,7 +45,7 @@
         </header>
 
         <!-- Slide Container -->
-        <div id="slide-container" class="flex-grow p-8 md:p-16 flex items-center justify-center overflow-hidden">
+        <div id="slide-container" class="flex-grow p-8 md:p-16 lg:p-20 flex items-center justify-center overflow-hidden">
             <div id="loading">
                 <p class="text-xl text-gray-500">Loading slides...</p>
             </div>
