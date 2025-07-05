@@ -1,8 +1,8 @@
 {
+  "header": "Berufsbildnerkurs BBW Winterthur",
   "slides": [
     {
       "type": "header_2col_image",
-      "header_text": "Berufsbildnerkurs BBW Winterthur",
       "title": "Eigenheiten der 15- bis 20-jährigen Lernenden",
       "subtitle": "Das Wichtigste in Kürze",
       "content": "<ul><li>Sie bringen <strong>frischen Wind und neue Perspektiven</strong> in die Betriebe, sind oft <strong>neugierig und offen für neue Technologien</strong>.</li><li>Gleichzeitig benötigen sie <strong>Unterstützung und Begleitung</strong> durch die Berufsbildner, um die <strong>Herausforderungen dieser Lebensphase</strong> zu meistern.</li></ul>",
@@ -15,7 +15,6 @@
     },
     {
       "type": "quote",
-      "header_text": "Berufsbildnerkurs BBW Winterthur",
       "title": "Definition - Reifeprozess",
       "quote_text": "Der Reifeprozess beschreibt die Entwicklung von der Kindheit zum Erwachsenenalter. Er umfasst körperliche, geistige und soziale Veränderungen und führt zur wachsenden Selbstständigkeit und Eigenverantwortung."
     },
@@ -27,7 +26,6 @@
     },
     {
       "type": "image_with_title",
-      "header_text": "Berufsbildnerkurs BBW Winterthur",
       "title": "Stress",
       "subtitle": "Zustimmungsanteil zu dem Item „Mein Leben ist in den letzten 3 Jahren stressiger geworden“",
       "image_src": "https://placehold.co/800x500/e2e8f0/334155?text=Chart+Goes+Here"
