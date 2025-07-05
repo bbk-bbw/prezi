@@ -29,18 +29,29 @@
 <body class="bg-white">
 
     <div id="viewer" class="w-screen h-screen bg-white flex flex-col relative">
+        <!-- Persistent Header -->
+        <header id="presentation-header" class="absolute top-0 left-0 w-full p-4 text-right text-sm text-gray-500 z-10">
+            <!-- Header content will be injected here -->
+        </header>
+
+        <!-- Slide Container -->
         <div id="slide-container" class="flex-grow p-8 md:p-16 flex items-center justify-center overflow-hidden">
             <div id="loading">
                 <p class="text-xl text-gray-500">Loading slides...</p>
             </div>
         </div>
-        <div class="absolute bottom-4 left-4 flex items-center z-10">
-             <span id="slide-counter" class="text-sm text-gray-500 font-mono bg-black bg-opacity-20 px-2 py-1 rounded">0 / 0</span>
-        </div>
-        <div class="absolute bottom-4 right-4 flex items-center space-x-2 z-10">
-            <button id="prev-btn" class="px-4 py-2 bg-gray-800 bg-opacity-50 text-white rounded-md hover:bg-opacity-75 transition-opacity disabled:opacity-20 disabled:cursor-not-allowed">Prev</button>
-            <button id="next-btn" class="px-4 py-2 bg-gray-800 bg-opacity-50 text-white rounded-md hover:bg-opacity-75 transition-opacity disabled:opacity-20 disabled:cursor-not-allowed">Next</button>
-        </div>
+
+        <!-- Persistent Footer -->
+        <footer class="absolute bottom-0 left-0 w-full p-4 flex justify-between items-center z-10">
+            <div id="presentation-footer" class="text-sm text-gray-500 font-mono bg-black bg-opacity-20 px-2 py-1 rounded">
+                <!-- Footer content (filename) will be injected here -->
+            </div>
+            <div class="flex items-center space-x-2">
+                <span id="slide-counter" class="text-sm text-gray-500 font-mono bg-black bg-opacity-20 px-2 py-1 rounded">0 / 0</span>
+                <button id="prev-btn" class="px-4 py-2 bg-gray-800 bg-opacity-50 text-white rounded-md hover:bg-opacity-75 transition-opacity disabled:opacity-20 disabled:cursor-not-allowed">Prev</button>
+                <button id="next-btn" class="px-4 py-2 bg-gray-800 bg-opacity-50 text-white rounded-md hover:bg-opacity-75 transition-opacity disabled:opacity-20 disabled:cursor-not-allowed">Next</button>
+            </div>
+        </footer>
     </div>
 
     <script>
@@ -50,6 +61,8 @@
         const nextBtn = document.getElementById('next-btn');
         const slideCounter = document.getElementById('slide-counter');
         const loadingIndicator = document.getElementById('loading');
+        const headerElement = document.getElementById('presentation-header');
+        const footerElement = document.getElementById('presentation-footer');
 
         // State
         let slides = [];
@@ -144,6 +157,10 @@
             const templateUrl = './templates.json';
 
             try {
+                // Set footer text from filename
+                const presentationName = decodeURIComponent(fileId).replace(/\.json$/i, '');
+                footerElement.textContent = presentationName;
+
                 const [slideResponse, templateResponse] = await Promise.all([
                     fetch(slideUrl),
                     fetch(templateUrl)
@@ -154,6 +171,11 @@
 
                 const slideData = await slideResponse.json();
                 templates = await templateResponse.json();
+                
+                // Set header text from JSON
+                if (slideData.header) {
+                    headerElement.textContent = slideData.header;
+                }
 
                 slides = slideData.slides;
                 loadingIndicator.style.display = 'none';
