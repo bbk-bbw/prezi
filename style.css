@@ -2,18 +2,16 @@
 html {
     /*
      * clamp(MIN, PREFERRED, MAX)
-     * MIN: The smallest the font will get (12px).
-     * PREFERRED: The ideal size, scales with 1.5% of the viewport width.
-     * MAX: The largest the font will get (22px).
+     * MIN: The smallest the font will get (16px).
+     * PREFERRED: The ideal size, scales with 2% of the viewport width.
+     * MAX: The largest the font will get (28px).
      */
-    font-size: clamp(12px, 1.5vw, 22px);
+    font-size: clamp(16px, 2vw, 28px);
 }
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #f3f4f6;
     margin: 0;
-    padding: 0;
 }
 
 .slide.active {
