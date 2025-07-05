@@ -163,6 +163,17 @@
                 renderSlide();
             }
         });
+        
+        // --- Keyboard Navigation ---
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowRight') {
+                // Trigger the next button's click event to go to the next slide
+                nextBtn.click();
+            } else if (event.key === 'ArrowLeft') {
+                // Trigger the previous button's click event to go to the previous slide
+                prevBtn.click();
+            }
+        });
 
         // --- Initialization ---
         window.addEventListener('DOMContentLoaded', () => {
