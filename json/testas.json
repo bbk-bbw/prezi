@@ -4,14 +4,14 @@
     {
       "type": "header_2col_image",
       "title": "Eigenheiten der 15- bis 20-jährigen Lernenden",
-      "subtitle": "Das Wichtigste in Kürze",
+      "subheader": "Das Wichtigste in Kürze",
       "content": "<ul><li>Sie bringen <strong>frischen Wind und neue Perspektiven</strong> in die Betriebe, sind oft <strong>neugierig und offen für neue Technologien</strong>.</li><li>Gleichzeitig benötigen sie <strong>Unterstützung und Begleitung</strong> durch die Berufsbildner, um die <strong>Herausforderungen dieser Lebensphase</strong> zu meistern.</li></ul>",
       "image_src": "https://placehold.co/400x300/05a6a1/white?text=Keypoints"
     },
     {
       "type": "video_embed",
       "title": "Ticken Jugendlichen anders?",
-      "subtitle": "Lutz Jäncke",
+      "subheader": "Lutz Jäncke",
       "video_src": "https://www.nanoo.tv/link/w/bTnhofuv"
     },
     {
