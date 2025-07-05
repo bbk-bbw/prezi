@@ -2,11 +2,11 @@
 html {
     /*
      * clamp(MIN, PREFERRED, MAX)
-     * MIN: The smallest the font will get (16px).
-     * PREFERRED: The ideal size, scales with 2% of the viewport width.
-     * MAX: The largest the font will get (28px).
+     * MIN: The smallest the font will get (14px).
+     * PREFERRED: The ideal size, scales with 1.8vw of the viewport width.
+     * MAX: The largest the font will get (24px).
      */
-    font-size: clamp(16px, 2vw, 28px);
+    font-size: clamp(14px, 1.8vw, 24px);
 }
 
 body {
