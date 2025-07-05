@@ -20,18 +20,15 @@
 
         <!-- Persistent Footer -->
         <footer class="absolute bottom-0 left-0 w-full p-4 flex justify-between items-center z-10">
-            <!-- Left: Presentation Name (from filename) -->
-            <div id="presentation-footer" class="text-sm text-gray-500 font-mono"></div>
-            
-            <!-- Center: Main Header (from JSON) -->
-            <div id="presentation-header" class="text-sm text-gray-500"></div>
-
-            <!-- Right: Navigation Controls -->
+            <!-- Left: Navigation Controls -->
             <div class="flex items-center space-x-2">
-                <span id="slide-counter" class="text-sm text-gray-500 font-mono">0 / 0</span>
                 <button id="prev-btn" class="px-4 py-2 bg-gray-800 bg-opacity-50 text-white rounded-md hover:bg-opacity-75 transition-opacity disabled:opacity-20 disabled:cursor-not-allowed">Prev</button>
                 <button id="next-btn" class="px-4 py-2 bg-gray-800 bg-opacity-50 text-white rounded-md hover:bg-opacity-75 transition-opacity disabled:opacity-20 disabled:cursor-not-allowed">Next</button>
+                 <span id="slide-counter" class="text-sm text-gray-500 font-mono">0 / 0</span>
             </div>
+
+            <!-- Right: Combined Footer Text -->
+            <div id="presentation-footer" class="text-sm text-gray-500 text-right"></div>
         </footer>
     </div>
 
