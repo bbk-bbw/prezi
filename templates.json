@@ -1,5 +1,5 @@
 {
-  "title": "<div class=\"text-center w-full\"><h1 class=\"text-5xl font-bold text-gray-800\">{{title}}</h1><p class=\"text-2xl text-gray-600 mt-4\">{{subtitle}}</p></div>",
+  "title": "<div class=\"text-center w-full\"><h1 class=\"text-5xl font-bold text-gray-800\">{{title}}</h1><p class=\"text-2xl text-gray-600 mt-4\">{{subtitle}}</p><h4 class=\"text-xl text-gray-500 mt-4\">{{subheader}}</h4></div>",
   "overview": "<div class=\"w-full text-left\"><h2 class=\"text-3xl font-bold text-gray-800 mb-2\">{{title}}</h2><h4 class=\"text-xl text-gray-500 mb-6\">{{subheader}}</h4><ul class=\"list-disc list-inside space-y-2 text-xl text-gray-700\">{{points}}</ul></div>",
   "theory": "<div class=\"w-full text-left\"><h2 class=\"text-3xl font-bold text-gray-800 mb-2\">{{title}}</h2><h4 class=\"text-xl text-gray-500 mb-4\">{{subheader}}</h4><div class=\"text-lg text-gray-700 space-y-4\">{{content}}</div></div>",
   "assignment": "<div class=\"w-full text-left\"><h2 class=\"text-3xl font-bold text-blue-600 mb-2\">{{title}}</h2><h4 class=\"text-xl text-gray-500 mb-4\">{{subheader}}</h4><p class=\"text-lg text-gray-800 mb-2\">{{description}}</p><a href=\"{{link}}\" target=\"_blank\" class=\"text-blue-500 hover:underline\">View Assignment Details</a></div>",
